@@ -1,13 +1,9 @@
 package handler
 
 import (
-	"errors"
-	"fmt"
-	"strconv"
-
 	"github.com/gofiber/fiber/v2"
-	"github.com/joaovicdsantos/discord-clone-api/exception"
 	"github.com/joaovicdsantos/discord-clone-api/service"
+	"github.com/joaovicdsantos/discord-clone-api/util"
 )
 
 var (
@@ -22,14 +18,14 @@ func GetServer(c *fiber.Ctx) error {
 
 // GetServerById get one specific server
 func GetServerById(c *fiber.Ctx) error {
-	id, convertErr := verifyAndConvertID(c.Params("id"))
+	id, convertErr := util.VerifyAndConvertID(c.Params("id"))
 	if convertErr.Err != nil {
-		c.SendStatus(int(convertErr.StatusCode))
+		c.SendStatus(convertErr.StatusCode)
 		return c.JSON(fiber.Map{
 			"error": convertErr.Err.Error(),
 		})
 	}
-	server, err := serverService.FindById(uint(id))
+	server, err := serverService.FindById(id)
 	if err != nil {
 		c.SendStatus(404)
 		return c.JSON(fiber.Map{
@@ -54,9 +50,9 @@ func CreateServer(c *fiber.Ctx) error {
 
 // DeleteServer delete a server by id
 func DeleteServer(c *fiber.Ctx) error {
-	id, convertErr := verifyAndConvertID(c.Params("id"))
+	id, convertErr := util.VerifyAndConvertID(c.Params("id"))
 	if convertErr.Err != nil {
-		c.SendStatus(int(convertErr.StatusCode))
+		c.SendStatus(convertErr.StatusCode)
 		return c.JSON(fiber.Map{
 			"error": convertErr.Err.Error(),
 		})
@@ -67,9 +63,9 @@ func DeleteServer(c *fiber.Ctx) error {
 
 // UpdateServer update a server by id
 func UpdateServer(c *fiber.Ctx) error {
-	id, convertErr := verifyAndConvertID(c.Params("id"))
+	id, convertErr := util.VerifyAndConvertID(c.Params("id"))
 	if convertErr.Err != nil {
-		c.SendStatus(int(convertErr.StatusCode))
+		c.SendStatus(convertErr.StatusCode)
 		return c.JSON(fiber.Map{
 			"error": convertErr.Err.Error(),
 		})
@@ -82,15 +78,4 @@ func UpdateServer(c *fiber.Ctx) error {
 		})
 	}
 	return c.SendStatus(204)
-}
-
-func verifyAndConvertID(id string) (uint, exception.HttpError) {
-	idConvertido, err := strconv.ParseUint(id, 10, 32)
-	if err != nil {
-		return 0, exception.HttpError{
-			Err:        errors.New(fmt.Sprintf("ID %s isn't valid", id)),
-			StatusCode: 400,
-		}
-	}
-	return uint(idConvertido), exception.HttpError{}
 }
