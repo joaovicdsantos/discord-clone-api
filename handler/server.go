@@ -3,7 +3,6 @@ package handler
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/joaovicdsantos/discord-clone-api/service"
-	"github.com/joaovicdsantos/discord-clone-api/util"
 )
 
 var (
@@ -18,18 +17,11 @@ func GetServer(c *fiber.Ctx) error {
 
 // GetServerById get one specific server
 func GetServerById(c *fiber.Ctx) error {
-	id, convertErr := util.VerifyAndConvertID(c.Params("id"))
-	if convertErr.Err != nil {
-		c.SendStatus(convertErr.StatusCode)
+	server, err := serverService.FindById(c.Params("id"))
+	if err.Err != nil {
+		c.SendStatus(err.StatusCode)
 		return c.JSON(fiber.Map{
-			"error": convertErr.Err.Error(),
-		})
-	}
-	server, err := serverService.FindById(id)
-	if err != nil {
-		c.SendStatus(404)
-		return c.JSON(fiber.Map{
-			"error": err.Error(),
+			"error": err.Err.Error(),
 		})
 	}
 	return c.JSON(server)
@@ -38,10 +30,10 @@ func GetServerById(c *fiber.Ctx) error {
 // CreateServer create a new server
 func CreateServer(c *fiber.Ctx) error {
 	server, err := serverService.Create(c.BodyParser)
-	if err != nil {
-		c.SendStatus(404)
+	if err.Err != nil {
+		c.SendStatus(err.StatusCode)
 		return c.JSON(fiber.Map{
-			"error": err.Error(),
+			"error": err.Err.Error(),
 		})
 	}
 	c.SendStatus(201)
@@ -50,31 +42,23 @@ func CreateServer(c *fiber.Ctx) error {
 
 // DeleteServer delete a server by id
 func DeleteServer(c *fiber.Ctx) error {
-	id, convertErr := util.VerifyAndConvertID(c.Params("id"))
-	if convertErr.Err != nil {
-		c.SendStatus(convertErr.StatusCode)
+	err := serverService.Delete(c.Params("id"))
+	if err.Err != nil {
+		c.SendStatus(err.StatusCode)
 		return c.JSON(fiber.Map{
-			"error": convertErr.Err.Error(),
+			"error": err.Err.Error(),
 		})
 	}
-	serverService.Delete(uint(id))
 	return c.SendStatus(204)
 }
 
 // UpdateServer update a server by id
 func UpdateServer(c *fiber.Ctx) error {
-	id, convertErr := util.VerifyAndConvertID(c.Params("id"))
-	if convertErr.Err != nil {
-		c.SendStatus(convertErr.StatusCode)
+	err := serverService.Update(c.Params("id"), c.BodyParser)
+	if err.Err != nil {
+		c.SendStatus(err.StatusCode)
 		return c.JSON(fiber.Map{
-			"error": convertErr.Err.Error(),
-		})
-	}
-	err := serverService.Update(id, c.BodyParser)
-	if err != nil {
-		c.SendStatus(400)
-		return c.JSON(fiber.Map{
-			"error": err.Error(),
+			"error": err.Err.Error(),
 		})
 	}
 	return c.SendStatus(204)

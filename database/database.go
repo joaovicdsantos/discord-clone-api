@@ -9,10 +9,12 @@ import (
 	"gorm.io/gorm"
 )
 
+// DBConn database connection variable
 var (
 	DBConn *gorm.DB
 )
 
+// InitDatabase function to start the database
 func InitDatabase() {
 	var (
 		err     error

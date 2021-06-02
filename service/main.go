@@ -1,15 +1,19 @@
 package service
 
+import "github.com/joaovicdsantos/discord-clone-api/exception"
+
+// BodyParser a fiber BodyParser abstraction
 type BodyParser func(out interface{}) error
 
+// Service service interface example
 type Service interface {
-	FindAll() interface{}
+	FindAll() []interface{}
 
-	FindById(id uint) (interface{}, error)
+	FindById(stringId string) (interface{}, exception.HttpError)
 
-	Create(bodyParser BodyParser) error
+	Create(bodyParser BodyParser) exception.HttpError
 
-	Delete(id uint) error
+	Delete(stringId string) exception.HttpError
 
-	Update(id uint, bodyParser BodyParser) (interface{}, error)
+	Update(stringId string, bodyParser BodyParser) (interface{}, exception.HttpError)
 }

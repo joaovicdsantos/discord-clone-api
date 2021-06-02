@@ -5,6 +5,7 @@ import (
 	"github.com/joaovicdsantos/discord-clone-api/handler"
 )
 
+// SetupRoutes configure all routes
 func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api/v1")
 
