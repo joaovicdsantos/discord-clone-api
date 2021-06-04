@@ -47,7 +47,7 @@ func InitDatabase() {
 	fmt.Println("Connection Opened to Database")
 	DBConn.AutoMigrate(&model.Server{})
 	DBConn.AutoMigrate(&model.Channel{})
-	DBConn.AutoMigrate(&model.GroupChannel{})
+	DBConn.AutoMigrate(&model.ChannelGroup{})
 	DBConn.AutoMigrate(&model.User{})
 	DBConn.AutoMigrate(&model.Message{})
 	fmt.Println("Tables migrated")

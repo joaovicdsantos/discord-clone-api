@@ -25,11 +25,11 @@ type Channel struct {
 	ServerID       uint        `json:"server_id" gorm:"not null"`
 	Name           string      `json:"name"`
 	Type           ChannelType `json:"type"`
-	GroupChannelID uint        `json:"group_channel"`
+	ChannelGroupID uint        `json:"channel_group"`
 }
 
-// GroupChannel group channel model
-type GroupChannel struct {
+// ChannelGroup channel group model
+type ChannelGroup struct {
 	ID         uint      `json:"id" gorm:"primaryKey;autoIncrement"`
 	GroupID    uint      `json:"group_id"`
 	Name       string    `json:"name"`

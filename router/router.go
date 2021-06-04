@@ -22,4 +22,12 @@ func SetupRoutes(app *fiber.App) {
 	channelRoutes.Post("/", handler.CreateChannel)
 	channelRoutes.Delete("/:id", handler.DeleteChannel)
 	channelRoutes.Put("/:id", handler.UpdateChannel)
+
+	channelGroupRoutes := api.Group("/channel-group")
+	channelGroupRoutes.Get("/", handler.GetChannelGroup)
+	channelGroupRoutes.Get("/:id", handler.GetChannelGroupById)
+	channelGroupRoutes.Post("/", handler.CreateChannelGroup)
+	channelGroupRoutes.Delete("/:id", handler.DeleteChannelGroup)
+	channelGroupRoutes.Put("/:id", handler.UpdateChannelGroup)
+
 }
