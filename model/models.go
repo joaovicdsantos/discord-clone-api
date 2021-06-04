@@ -16,17 +16,16 @@ const (
 type Server struct {
 	ID       uint      `json:"id" gorm:"primaryKey;autoIncrement"`
 	Name     string    `json:"name" gorm:"unique"`
-	Channels []Channel `json:"channels" gorm:"references:ID"`
+	Channels []Channel `json:"channels" gorm:"references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 // Channel channel model
 type Channel struct {
-	ID             uint         `json:"id" gorm:"primaryKey;autoIncrement"`
-	ServerID       uint         `json:"server_id"`
-	Name           string       `json:"name"`
-	Type           ChannelType  `json:"type"`
-	GroupChannelID uint         `json:"group_channel"`
-	Group          GroupChannel `json:"group" gorm:"foreignKey:GroupChannelID;references:ID"`
+	ID             uint        `json:"id" gorm:"primaryKey;autoIncrement"`
+	ServerID       uint        `json:"server_id" gorm:"not null"`
+	Name           string      `json:"name"`
+	Type           ChannelType `json:"type"`
+	GroupChannelID uint        `json:"group_channel"`
 }
 
 // GroupChannel group channel model
