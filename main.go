@@ -19,9 +19,13 @@ func main() {
 
 	app := fiber.New()
 
+	// Log
 	app.Use(logger.New())
+
+	// Routes
 	router.SetupRoutes(app)
 
+	// InitDatabase
 	database.InitDatabase()
 
 	app.Get("/", func(c *fiber.Ctx) error {
