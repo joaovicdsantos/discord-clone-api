@@ -35,10 +35,18 @@ func Login(c *fiber.Ctx) error {
 			"error": err.Err.Error(),
 		})
 	}
-	c.Set("Authorization", token)
-	return c.JSON(fiber.Map{
-		"authorization": token,
-	})
+
+	cookie := new(fiber.Cookie)
+	cookie.Name = "Authorization"
+	cookie.Value = token
+	cookie.HTTPOnly = true
+	c.Cookie(cookie)
+
+	return c.SendStatus(200)
+	//c.Set("Authorization", token)
+	//return c.JSON(fiber.Map{
+	//	"authorization": token,
+	//})
 }
 
 // CreateUser create a new user
