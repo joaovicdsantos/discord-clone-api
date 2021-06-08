@@ -9,8 +9,6 @@ import (
 	jwt "github.com/form3tech-oss/jwt-go"
 )
 
-const TOKEN_PREFIX = "Bearer"
-
 func GenerateToken(claimsUser map[string]string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
@@ -24,5 +22,5 @@ func GenerateToken(claimsUser map[string]string) (string, error) {
 		fmt.Println(err.Error())
 		return "", errors.New("Internal error")
 	}
-	return fmt.Sprintf("%s %s", TOKEN_PREFIX, assignedToken), nil
+	return fmt.Sprintf("%s", assignedToken), nil
 }

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/joaovicdsantos/discord-clone-api/database"
 	"github.com/joaovicdsantos/discord-clone-api/router"
@@ -22,6 +23,10 @@ func main() {
 	// Log
 	app.Use(logger.New())
 
+	// CORS
+	app.Use(cors.New(cors.Config{
+		AllowCredentials: true,
+	}))
 	// Routes
 	router.SetupRoutes(app)
 

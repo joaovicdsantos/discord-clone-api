@@ -40,13 +40,10 @@ func Login(c *fiber.Ctx) error {
 	cookie.Name = "Authorization"
 	cookie.Value = token
 	cookie.HTTPOnly = true
+	cookie.SameSite = "Strict"
 	c.Cookie(cookie)
 
 	return c.SendStatus(200)
-	//c.Set("Authorization", token)
-	//return c.JSON(fiber.Map{
-	//	"authorization": token,
-	//})
 }
 
 // CreateUser create a new user

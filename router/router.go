@@ -11,14 +11,15 @@ import (
 // SetupRoutes configure all routes
 func SetupRoutes(app *fiber.App) {
 
-	app.Post("/cadastro", handler.CreateUser)
-	app.Post("/login", handler.Login)
-
 	api := app.Group("/api/v1")
+
+	api.Post("/register", handler.CreateUser)
+	api.Post("/login", handler.Login)
 
 	// JWT
 	app.Use(jwtware.New(jwtware.Config{
-		SigningKey: []byte(os.Getenv("SECRET_KEY")),
+		SigningKey:  []byte(os.Getenv("SECRET_KEY")),
+		TokenLookup: "cookie:Authorization",
 	}))
 
 	// Server
