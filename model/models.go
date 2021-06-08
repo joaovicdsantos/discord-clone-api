@@ -1,15 +1,31 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 // ChannelType types of channels
 type ChannelType string
 
+// Status type of users status
+type Status string
+
 // Text text channel
-// VOice voice channel
+// Voice voice channel
 const (
 	Text  ChannelType = "text"
 	Voice ChannelType = "voice"
+)
+
+// Online online status
+// Idle idle status
+// Busy busy status
+// Invisible invisible status
+const (
+	Online    Status = "Online"
+	Idle      Status = "Idle"
+	Busy      Status = "Do not disturb"
+	Invisible Status = "Invisible"
 )
 
 // Server server model
@@ -35,14 +51,6 @@ type ChannelGroup struct {
 	Name       string    `json:"name"`
 	ChannelsID uint      `json:"channels_id"`
 	Channels   []Channel `json:"channels" gorm:"references:ID"`
-}
-
-// User user model
-type User struct {
-	ID       uint      `json:"id" gorm:"primaryKey;autoIncrement"`
-	Username string    `json:"username"`
-	Password string    `json:"password"`
-	Messages []Message `json:"mensagens" gorm:"references:ID"`
 }
 
 // Message message model

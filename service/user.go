@@ -8,6 +8,7 @@ import (
 	"github.com/joaovicdsantos/discord-clone-api/exception"
 	"github.com/joaovicdsantos/discord-clone-api/jwt"
 	"github.com/joaovicdsantos/discord-clone-api/model"
+	"github.com/joaovicdsantos/discord-clone-api/validator"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -61,7 +62,7 @@ func (u UserService) Login(bodyParser BodyParser) (string, exception.HttpError) 
 		}
 	}
 	if err := bcrypt.CompareHashAndPassword(
-		[]byte(registeredUser.Password), []byte(user.Password)); err != nil {
+		[]byte(*registeredUser.Password), []byte(*user.Password)); err != nil {
 		return "", exception.HttpError{
 			Err:        errors.New("Invalid password"),
 			StatusCode: 401,
@@ -69,7 +70,7 @@ func (u UserService) Login(bodyParser BodyParser) (string, exception.HttpError) 
 	}
 
 	token, err := jwt.GenerateToken(map[string]string{
-		"username": user.Username,
+		"username": *user.Username,
 	})
 	if err != nil {
 		return "", exception.HttpError{
@@ -87,20 +88,34 @@ func (u UserService) Create(bodyParser BodyParser) (model.User, exception.HttpEr
 	var user model.User
 	if err := bodyParser(&user); err != nil {
 		return model.User{}, exception.HttpError{
-			Err:        errors.New("Invalid object."),
+			Err:        errors.New("Internal error"),
+			StatusCode: 500,
+		}
+	}
+
+	// Validation
+	errs := validator.Validation(user)
+	if errs != nil {
+		var errString string
+		for _, err := range errs {
+			errString = fmt.Sprintf("%s\n%s failed in %s tag", errString, err.Field(), err.Tag())
+		}
+		return model.User{}, exception.HttpError{
+			Err:        errors.New(errString),
 			StatusCode: 400,
 		}
 	}
 
 	// Hashing password
-	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(*user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return model.User{}, exception.HttpError{
 			Err:        errors.New("Internal Error"),
 			StatusCode: 500,
 		}
 	}
-	user.Password = string(encryptedPassword)
+	encryptedPasswordString := string(encryptedPassword)
+	user.Password = &encryptedPasswordString
 
 	db := database.DBConn
 	db.Save(&user)
