@@ -54,10 +54,10 @@ func (u UserService) Login(bodyParser BodyParser) (string, exception.HttpError) 
 
 	// Verifications
 	var registeredUser model.User
-	db.Where("username = ?", user.Username).Find(&registeredUser)
+	db.Where("email = ?", user.Email).Find(&registeredUser)
 	if registeredUser.ID == 0 {
 		return "", exception.HttpError{
-			Err:        errors.New("Username not found"),
+			Err:        errors.New("Email not found"),
 			StatusCode: 401,
 		}
 	}
@@ -70,7 +70,7 @@ func (u UserService) Login(bodyParser BodyParser) (string, exception.HttpError) 
 	}
 
 	token, err := jwt.GenerateToken(map[string]string{
-		"username": *user.Username,
+		"email": *user.Email,
 	})
 	if err != nil {
 		return "", exception.HttpError{

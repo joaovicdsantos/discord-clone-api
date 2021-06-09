@@ -43,7 +43,7 @@ func Login(c *fiber.Ctx) error {
 	cookie.SameSite = "Strict"
 	c.Cookie(cookie)
 
-	return c.SendStatus(200)
+	return nil
 }
 
 // CreateUser create a new user
