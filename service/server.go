@@ -27,7 +27,7 @@ func (s ServerService) FindById(id string) (model.Server, exception.HttpError) {
 	var server model.Server
 
 	db := database.DBConn
-	if db.First(&server, id); server.ID == 0 {
+	if db.Preload("Channels").First(&server, id); server.ID == 0 {
 		return model.Server{}, exception.HttpError{
 			Err:        fmt.Errorf("Server %s not found.", id),
 			StatusCode: 404,
@@ -35,6 +35,25 @@ func (s ServerService) FindById(id string) (model.Server, exception.HttpError) {
 	}
 
 	return server, exception.HttpError{}
+}
+
+// FindAllGroupChannels find all channels by server id
+func (s ServerService) FindAllGroupChannels(id string) ([]model.ChannelGroup, exception.HttpError) {
+
+	db := database.DBConn
+
+	// Exists
+	var server model.Server
+	if db.First(&server, id); server.ID == 0 {
+		return []model.ChannelGroup{}, exception.HttpError{
+			Err:        fmt.Errorf("Server %s not found.", id),
+			StatusCode: 404,
+		}
+	}
+
+	var channelGroups []model.ChannelGroup
+	db.Where("server_id = ?", id).Preload("Channels").Find(&channelGroups)
+	return channelGroups, exception.HttpError{}
 }
 
 // Create create a server
@@ -49,6 +68,13 @@ func (s ServerService) Create(bodyParser BodyParser) (model.Server, exception.Ht
 
 	db := database.DBConn
 	db.Save(&server)
+
+	fmt.Print(server.ID)
+
+	var channelGroup model.ChannelGroup
+	channelGroup.Name = "default"
+	channelGroup.ServerID = server.ID
+	db.Save(&channelGroup)
 
 	return server, exception.HttpError{}
 }

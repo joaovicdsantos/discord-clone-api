@@ -27,6 +27,19 @@ func GetServerById(c *fiber.Ctx) error {
 	return c.JSON(server)
 }
 
+// GetAllChannelGroups find all channel groups by server id
+func GetAllChannelGroups(c *fiber.Ctx) error {
+	server, err := serverService.FindAllGroupChannels(c.Params("id"))
+	if err.Err != nil {
+		c.SendStatus(err.StatusCode)
+		return c.JSON(fiber.Map{
+			"error": err.Err.Error(),
+		})
+	}
+	return c.JSON(server)
+
+}
+
 // CreateServer create a new server
 func CreateServer(c *fiber.Ctx) error {
 	server, err := serverService.Create(c.BodyParser)

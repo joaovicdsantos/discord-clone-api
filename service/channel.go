@@ -27,7 +27,7 @@ func (c ChannelService) FindById(id string) (model.Channel, exception.HttpError)
 	var channel model.Channel
 
 	db := database.DBConn
-	if db.First(&channel, id); channel.ID == 0 {
+	if db.Preload("Messages").Where("id = ?", id).Find(&channel); channel.ID == 0 {
 		return model.Channel{}, exception.HttpError{
 			Err:        fmt.Errorf("Channel %s not found.", id),
 			StatusCode: 404,
@@ -62,6 +62,17 @@ func (c ChannelService) Create(bodyParser BodyParser) (model.Channel, exception.
 	_, err := serverService.FindById(fmt.Sprint(channel.ServerID))
 	if err.Err != nil {
 		return model.Channel{}, err
+	}
+
+	// This channel group exists?
+	if channel.ChannelGroupID != 0 {
+		var groupChannelService ChannelGroupService
+		_, err := groupChannelService.FindById(fmt.Sprint(channel.ChannelGroupID))
+		if err.Err != nil {
+			return model.Channel{}, err
+		}
+	} else {
+		channel.ChannelGroupID = 1
 	}
 
 	db.Save(&channel)

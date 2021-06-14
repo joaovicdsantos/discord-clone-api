@@ -26,6 +26,7 @@ func SetupRoutes(app *fiber.App) {
 	serverRoutes := api.Group("/server")
 	serverRoutes.Get("/", handler.GetServer)
 	serverRoutes.Get("/:id", handler.GetServerById)
+	serverRoutes.Get("/:id/channel-groups", handler.GetAllChannelGroups)
 	serverRoutes.Post("/", handler.CreateServer)
 	serverRoutes.Delete("/:id", handler.DeleteServer)
 	serverRoutes.Put("/:id", handler.UpdateServer)
