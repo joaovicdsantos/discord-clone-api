@@ -5,7 +5,11 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	jwtware "github.com/gofiber/jwt/v2"
-	"github.com/joaovicdsantos/discord-clone-api/handler"
+	"github.com/joaovicdsantos/discord-clone-api/handler/channel"
+	"github.com/joaovicdsantos/discord-clone-api/handler/channelgroup"
+	"github.com/joaovicdsantos/discord-clone-api/handler/message"
+	"github.com/joaovicdsantos/discord-clone-api/handler/server"
+	"github.com/joaovicdsantos/discord-clone-api/handler/user"
 )
 
 // SetupRoutes configure all routes
@@ -13,8 +17,8 @@ func SetupRoutes(app *fiber.App) {
 
 	api := app.Group("/api/v1")
 
-	api.Post("/register", handler.CreateUser)
-	api.Post("/login", handler.Login)
+	api.Post("/register", user.Register)
+	api.Post("/login", user.Login)
 
 	// JWT
 	app.Use(jwtware.New(jwtware.Config{
@@ -24,41 +28,41 @@ func SetupRoutes(app *fiber.App) {
 
 	// Server
 	serverRoutes := api.Group("/server")
-	serverRoutes.Get("/", handler.GetServer)
-	serverRoutes.Get("/:id", handler.GetServerById)
-	serverRoutes.Get("/:id/channel-groups", handler.GetAllChannelGroups)
-	serverRoutes.Post("/", handler.CreateServer)
-	serverRoutes.Delete("/:id", handler.DeleteServer)
-	serverRoutes.Put("/:id", handler.UpdateServer)
+	serverRoutes.Get("/", server.GetAll)
+	serverRoutes.Get("/:id", server.GetOne)
+	serverRoutes.Get("/:id/channel-groups", server.GetAllChannelGroups)
+	serverRoutes.Post("/", server.Create)
+	serverRoutes.Delete("/:id", server.Delete)
+	serverRoutes.Put("/:id", server.Update)
 
 	// Channel
 	channelRoutes := api.Group("/channel")
-	channelRoutes.Get("/", handler.GetChannel)
-	channelRoutes.Get("/:id", handler.GetChannelById)
-	channelRoutes.Post("/", handler.CreateChannel)
-	channelRoutes.Delete("/:id", handler.DeleteChannel)
-	channelRoutes.Put("/:id", handler.UpdateChannel)
+	channelRoutes.Get("/", channel.GetAll)
+	channelRoutes.Get("/:id", channel.GetOne)
+	channelRoutes.Post("/", channel.Create)
+	channelRoutes.Delete("/:id", channel.Delete)
+	channelRoutes.Put("/:id", channel.Update)
 
 	// Channel Group
 	channelGroupRoutes := api.Group("/channel-group")
-	channelGroupRoutes.Get("/", handler.GetChannelGroup)
-	channelGroupRoutes.Get("/:id", handler.GetChannelGroupById)
-	channelGroupRoutes.Post("/", handler.CreateChannelGroup)
-	channelGroupRoutes.Delete("/:id", handler.DeleteChannelGroup)
-	channelGroupRoutes.Put("/:id", handler.UpdateChannelGroup)
+	channelGroupRoutes.Get("/", channelgroup.GetAll)
+	channelGroupRoutes.Get("/:id", channelgroup.GetOne)
+	channelGroupRoutes.Post("/", channelgroup.Create)
+	channelGroupRoutes.Delete("/:id", channelgroup.Delete)
+	channelGroupRoutes.Put("/:id", channelgroup.Update)
 
 	// User
 	userRoutes := api.Group("/user")
-	userRoutes.Get("/", handler.GetUser)
-	userRoutes.Get("/:id", handler.GetUserById)
-	userRoutes.Delete("/:id", handler.DeleteUser)
-	userRoutes.Put("/:id", handler.UpdateUser)
+	userRoutes.Get("/", user.GetAll)
+	userRoutes.Get("/:id", user.GetOne)
+	userRoutes.Delete("/:id", user.Delete)
+	userRoutes.Put("/:id", user.Update)
 
 	// Message
 	messageRoutes := api.Group("/message")
-	messageRoutes.Get("/", handler.GetMessage)
-	messageRoutes.Get("/:id", handler.GetMessageById)
-	messageRoutes.Post("/", handler.CreateMessage)
-	messageRoutes.Delete("/:id", handler.DeleteMessage)
-	messageRoutes.Put("/:id", handler.UpdateMessage)
+	messageRoutes.Get("/", message.GetAll)
+	messageRoutes.Get("/:id", message.GetOne)
+	messageRoutes.Post("/", message.Create)
+	messageRoutes.Delete("/:id", message.Delete)
+	messageRoutes.Put("/:id", message.Update)
 }

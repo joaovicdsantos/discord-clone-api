@@ -13,23 +13,23 @@ import (
 type ChannelService struct {
 }
 
-// FindAll find all registered users
-func (c ChannelService) FindAll() []model.Channel {
+// GetAll find all registered users
+func (c ChannelService) GetAll() []model.Channel {
 	var channels []model.Channel
 	db := database.DBConn
 	db.Find(&channels)
 	return channels
 }
 
-// FindById find a user by id
-func (c ChannelService) FindById(id string) (model.Channel, exception.HttpError) {
+// GetOne find a user by id
+func (c ChannelService) GetOne(id string) (model.Channel, exception.HttpError) {
 
 	var channel model.Channel
 
 	db := database.DBConn
 	if db.Preload("Messages").Where("id = ?", id).Find(&channel); channel.ID == 0 {
 		return model.Channel{}, exception.HttpError{
-			Err:        fmt.Errorf("Channel %s not found.", id),
+			Err:        fmt.Errorf("channel %s not found", id),
 			StatusCode: 404,
 		}
 	}
@@ -38,19 +38,12 @@ func (c ChannelService) FindById(id string) (model.Channel, exception.HttpError)
 }
 
 // Create create a server
-func (c ChannelService) Create(bodyParser BodyParser) (model.Channel, exception.HttpError) {
-	var channel model.Channel
-	if err := bodyParser(&channel); err != nil {
-		return model.Channel{}, exception.HttpError{
-			Err:        errors.New("Invalid object."),
-			StatusCode: 400,
-		}
-	}
+func (c ChannelService) Create(channel model.Channel) (model.Channel, exception.HttpError) {
 
 	// Verify serverID
 	if channel.ServerID == 0 {
 		return model.Channel{}, exception.HttpError{
-			Err:        errors.New("Server ID is required"),
+			Err:        errors.New("server ID is required"),
 			StatusCode: 400,
 		}
 	}
@@ -59,7 +52,7 @@ func (c ChannelService) Create(bodyParser BodyParser) (model.Channel, exception.
 
 	// This server id exists?
 	var serverService ServerService
-	_, err := serverService.FindById(fmt.Sprint(channel.ServerID))
+	_, err := serverService.GetOne(fmt.Sprint(channel.ServerID))
 	if err.Err != nil {
 		return model.Channel{}, err
 	}
@@ -67,7 +60,7 @@ func (c ChannelService) Create(bodyParser BodyParser) (model.Channel, exception.
 	// This channel group exists?
 	if channel.ChannelGroupID != 0 {
 		var groupChannelService ChannelGroupService
-		_, err := groupChannelService.FindById(fmt.Sprint(channel.ChannelGroupID))
+		_, err := groupChannelService.GetOne(fmt.Sprint(channel.ChannelGroupID))
 		if err.Err != nil {
 			return model.Channel{}, err
 		}
@@ -87,7 +80,7 @@ func (c ChannelService) Delete(id string) exception.HttpError {
 	var channel model.Channel
 	if db.First(&channel, id); channel.ID == 0 {
 		return exception.HttpError{
-			Err:        fmt.Errorf("Channel %s not found.", id),
+			Err:        fmt.Errorf("channel %s not found", id),
 			StatusCode: 404,
 		}
 	}
@@ -100,21 +93,13 @@ func (c ChannelService) Delete(id string) exception.HttpError {
 }
 
 // Update update a server
-func (c ChannelService) Update(id string, bodyParser BodyParser) exception.HttpError {
-	var channel model.Channel
-	if err := bodyParser(&channel); err != nil {
-		return exception.HttpError{
-			Err:        errors.New("Invalid object"),
-			StatusCode: 400,
-		}
-	}
-
+func (c ChannelService) Update(id string, channel model.Channel) exception.HttpError {
 	db := database.DBConn
 
 	// Exists
 	if db.First(&channel, id); channel.ID == 0 {
 		return exception.HttpError{
-			Err:        fmt.Errorf("Channel %s not found.", id),
+			Err:        fmt.Errorf("channel %s not found", id),
 			StatusCode: 404,
 		}
 	}

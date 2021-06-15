@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/joaovicdsantos/discord-clone-api/database"
@@ -13,23 +12,23 @@ import (
 type ServerService struct {
 }
 
-// FindAll find all registered users
-func (s ServerService) FindAll() []model.Server {
+// GetAll find all registered users
+func (s ServerService) GetAll() []model.Server {
 	var servers []model.Server
 	db := database.DBConn
 	db.Find(&servers)
 	return servers
 }
 
-// FindById find a user by id
-func (s ServerService) FindById(id string) (model.Server, exception.HttpError) {
+// GetOne find a user by id
+func (s ServerService) GetOne(id string) (model.Server, exception.HttpError) {
 
 	var server model.Server
 
 	db := database.DBConn
 	if db.Preload("Channels").First(&server, id); server.ID == 0 {
 		return model.Server{}, exception.HttpError{
-			Err:        fmt.Errorf("Server %s not found.", id),
+			Err:        fmt.Errorf("server %s not found", id),
 			StatusCode: 404,
 		}
 	}
@@ -37,8 +36,8 @@ func (s ServerService) FindById(id string) (model.Server, exception.HttpError) {
 	return server, exception.HttpError{}
 }
 
-// FindAllGroupChannels find all channels by server id
-func (s ServerService) FindAllGroupChannels(id string) ([]model.ChannelGroup, exception.HttpError) {
+// GetAllGroupChannels find all channels by server id
+func (s ServerService) GetAllGroupChannels(id string) ([]model.ChannelGroup, exception.HttpError) {
 
 	db := database.DBConn
 
@@ -46,7 +45,7 @@ func (s ServerService) FindAllGroupChannels(id string) ([]model.ChannelGroup, ex
 	var server model.Server
 	if db.First(&server, id); server.ID == 0 {
 		return []model.ChannelGroup{}, exception.HttpError{
-			Err:        fmt.Errorf("Server %s not found.", id),
+			Err:        fmt.Errorf("server %s not found", id),
 			StatusCode: 404,
 		}
 	}
@@ -57,15 +56,7 @@ func (s ServerService) FindAllGroupChannels(id string) ([]model.ChannelGroup, ex
 }
 
 // Create create a server
-func (s ServerService) Create(bodyParser BodyParser) (model.Server, exception.HttpError) {
-	var server model.Server
-	if err := bodyParser(&server); err != nil {
-		return model.Server{}, exception.HttpError{
-			Err:        errors.New("Invalid object."),
-			StatusCode: 400,
-		}
-	}
-
+func (s ServerService) Create(server model.Server) (model.Server, exception.HttpError) {
 	db := database.DBConn
 	db.Save(&server)
 
@@ -86,7 +77,7 @@ func (s ServerService) Delete(id string) exception.HttpError {
 	var server model.Server
 	if db.First(&server, id); server.ID == 0 {
 		return exception.HttpError{
-			Err:        fmt.Errorf("Server %s not found.", id),
+			Err:        fmt.Errorf("server %s not found", id),
 			StatusCode: 404,
 		}
 	}
@@ -99,21 +90,13 @@ func (s ServerService) Delete(id string) exception.HttpError {
 }
 
 // Update update a server
-func (s ServerService) Update(id string, bodyParser BodyParser) exception.HttpError {
-	var server model.Server
-	if err := bodyParser(&server); err != nil {
-		return exception.HttpError{
-			Err:        errors.New("Invalid object"),
-			StatusCode: 400,
-		}
-	}
-
+func (s ServerService) Update(id string, server model.Server) exception.HttpError {
 	db := database.DBConn
 
 	// Exists
 	if db.First(&server, id); server.ID == 0 {
 		return exception.HttpError{
-			Err:        fmt.Errorf("Server %s not found.", id),
+			Err:        fmt.Errorf("server %s not found", id),
 			StatusCode: 404,
 		}
 	}

@@ -9,6 +9,7 @@ import (
 	jwt "github.com/form3tech-oss/jwt-go"
 )
 
+// GenerateToken generates a jwt token
 func GenerateToken(claimsUser map[string]string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 

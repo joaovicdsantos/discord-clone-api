@@ -4,6 +4,7 @@ import "github.com/go-playground/validator"
 
 var validate *validator.Validate
 
+// Validation performs the validation of any model and returns its errors
 func Validation(model interface{}) []validator.FieldError {
 	var errors []validator.FieldError
 	validate = validator.New()
