@@ -21,7 +21,7 @@ func GenerateToken(claimsUser map[string]string) (string, error) {
 	assignedToken, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 	if err != nil {
 		fmt.Println(err.Error())
-		return "", errors.New("Internal error")
+		return "", errors.New("internal error")
 	}
-	return fmt.Sprintf("%s", assignedToken), nil
+	return assignedToken, nil
 }
